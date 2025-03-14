@@ -1,4 +1,3 @@
-"use client"
 import { Link } from "react-router-dom"
 import { useNotifications } from "../../context/NotificationContext"
 import { formatDistanceToNow } from "date-fns"

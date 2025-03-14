@@ -1,5 +1,4 @@
-"use client"
-import { NavLink, Link } from "react-router-dom"
+ import { NavLink, Link } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 
 const Sidebar = () => {
