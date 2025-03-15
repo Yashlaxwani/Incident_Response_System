@@ -44,7 +44,10 @@ if (!fs.existsSync(uploadsDir)) {
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin:'*',
+  credentials: true
+}));
 
 // Setup request logging
 if (process.env.NODE_ENV === 'development') {

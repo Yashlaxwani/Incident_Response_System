@@ -23,9 +23,11 @@ const storage = multer.diskStorage({
 });
 
 // Check file type
+// In backend/utils/fileUpload.js
+// Make sure the file filter is correctly configured
 const fileFilter = (req, file, cb) => {
   // Allowed extensions
-  const filetypes = /jpeg|jpg|png|gif|pdf|doc|docx|txt/;
+  const filetypes = /jpeg|pdf|doc|docx|csv/;
   
   // Check extension
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -36,7 +38,7 @@ const fileFilter = (req, file, cb) => {
   if (mimetype && extname) {
     return cb(null, true);
   } else {
-    cb(new Error('File type not supported. Allowed types: jpeg, jpg, png, gif, pdf, doc, docx, txt'));
+    cb(new Error('File type not supported. Allowed types: jpeg,pdf, doc, docx, csv'));
   }
 };
 

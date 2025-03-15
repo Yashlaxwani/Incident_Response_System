@@ -24,61 +24,68 @@ const ReportIncident = () => {
     })
   }
 
-  const handleFileChange = async (e) => {
-    const files = Array.from(e.target.files)
+  // In frontend/src/pages/user/ReportIncident.jsx
+// Update the handleFileChange function
 
-    // Validate file size and type
-    const invalidFiles = files.filter((file) => {
-      const isValidSize = file.size <= FILE_UPLOAD_CONFIG.maxFileSize
-      const fileExt = `.${file.name.split(".").pop().toLowerCase()}`
-      const isValidType = FILE_UPLOAD_CONFIG.acceptedFormats.includes(fileExt)
+const handleFileChange = async (e) => {
+  const files = Array.from(e.target.files);
 
-      return !isValidSize || !isValidType
-    })
+  // Validate file size and type
+  const invalidFiles = files.filter((file) => {
+    const isValidSize = file.size <= FILE_UPLOAD_CONFIG.maxFileSize;
+    const fileExt = `.${file.name.split(".").pop().toLowerCase()}`;
+    const isValidType = FILE_UPLOAD_CONFIG.acceptedFormats.includes(fileExt);
 
-    if (invalidFiles.length > 0) {
-      toast.error(`Some files were not added. Please ensure files are under 5MB and in the correct format.`)
-      return
-    }
+    return !isValidSize || !isValidType;
+  });
 
-    setUploadingFiles(true)
-
-    try {
-      // Create preview for each file
-      const previews = files.map((file) => {
-        return {
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
-        }
-      })
-
-      setFilePreview([...filePreview, ...previews])
-
-      // Prepare files for upload
-      const formDataFiles = new FormData()
-      files.forEach((file) => {
-        formDataFiles.append("files", file)
-      })
-
-      // Upload files to server
-      const response = await axios.post(`${API_URL}/api/upload`, formDataFiles)
-
-      // Add file URLs to form data
-      setFormData({
-        ...formData,
-        evidence: [...formData.evidence, ...response.data.fileUrls],
-      })
-
-      toast.success("Files uploaded successfully")
-    } catch (error) {
-      toast.error("Failed to upload files")
-      console.error(error)
-    } finally {
-      setUploadingFiles(false)
-    }
+  if (invalidFiles.length > 0) {
+    toast.error(`Some files were not added. Please ensure files are under 5MB and in the correct format.`);
+    return;
   }
+
+  setUploadingFiles(true);
+
+  try {
+    // Create preview for each file
+    const previews = files.map((file) => {
+      return {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
+      };
+    });
+
+    setFilePreview([...filePreview, ...previews]);
+
+    // Prepare files for upload
+    const formDataFiles = new FormData();
+    files.forEach((file) => {
+      formDataFiles.append("files", file);
+    });
+
+    // Upload files to server
+    const response = await axios.post(`${API_URL}/api/upload`, formDataFiles, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    // Add file URLs to form data
+    setFormData({
+      ...formData,
+      evidence: [...formData.evidence, ...response.data.fileUrls],
+    });
+
+    toast.success("Files uploaded successfully");
+  } catch (error) {
+    console.error("File upload error:", error);
+    toast.error(`Failed to upload files: ${error.response?.data?.message || error.message}`);
+  } finally {
+    setUploadingFiles(false);
+  }
+};
 
   const removeFile = (index) => {
     const updatedPreviews = [...filePreview]

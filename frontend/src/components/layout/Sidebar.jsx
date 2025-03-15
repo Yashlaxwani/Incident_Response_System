@@ -1,9 +1,9 @@
- import { NavLink, Link } from "react-router-dom"
+import { NavLink, Link } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
-
+import { useNavigate } from "react-router-dom";
 const Sidebar = () => {
   const { currentUser, logout } = useAuth()
-
+  const navigate = useNavigate();
   // Define navigation items based on user role
   const getUserNavItems = () => [
     { path: "/user/dashboard", icon: "bi-speedometer2", label: "Dashboard" },
@@ -36,6 +36,11 @@ const Sidebar = () => {
       default:
         return getUserNavItems()
     }
+
+    const handleLogout = () => {
+      logout();
+      navigate("/login"); // Redirect to login page after logout
+    };
   }
 
   return (
@@ -56,13 +61,10 @@ const Sidebar = () => {
         ))}
       </ul>
       <hr />
-      <div className="dropdown">
+      <div>
         <a
           href="#"
-          className="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-          id="dropdownUser1"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
+          className="d-flex align-items-center text-white text-decoration-none "
         >
           <div className="user-avatar me-2">
             {currentUser?.name
@@ -74,13 +76,6 @@ const Sidebar = () => {
           </div>
           <strong>{currentUser?.name}</strong>
         </a>
-        <ul className="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-          <li>
-            <a className="dropdown-item" href="#" onClick={() => logout()}>
-              Sign out
-            </a>
-          </li>
-        </ul>
       </div>
     </div>
   )

@@ -20,12 +20,24 @@ export const NotificationProvider = ({ children }) => {
         auth: {
           token: localStorage.getItem("token"),
         },
-      })
+        transports: ['websocket', 'polling'], // Try both WebSocket and polling
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+    newSocket.on('connect', () => {
+      console.log('Socket connected:', newSocket.id);
+    });
+
+    newSocket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err.message);
+    });
 
       setSocket(newSocket)
 
       // Clean up on unmount
       return () => {
+        console.log('Disconnecting socket');
         newSocket.disconnect()
       }
     }
@@ -54,6 +66,7 @@ export const NotificationProvider = ({ children }) => {
 
       // Listen for new notifications
       socket.on("notification", (notification) => {
+        console.log("Received notification:", notification);
         setNotifications((prev) => [notification, ...prev])
         setUnreadCount((prev) => prev + 1)
       })

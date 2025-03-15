@@ -28,8 +28,10 @@ exports.setupSocketIO = (io) => {
       
       // Attach user to socket
       socket.user = user;
+      console.log(`Socket authenticated for user: ${user.name} (${user._id})`);
       next();
     } catch (error) {
+      console.error('Socket authentication error:', error);
       return next(new Error('Authentication error: Invalid token'));
     }
   });
@@ -59,6 +61,7 @@ exports.setupSocketIO = (io) => {
     
     // Handle new incidents
     socket.on('newIncident', (data) => {
+      console.log('New incident received:', data);
       // Broadcast to admin users
       socket.broadcast.emit('newIncident', data);
     });
