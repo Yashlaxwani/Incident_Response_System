@@ -71,6 +71,40 @@ const ManageIncidents = () => {
     }
   }
 
+  // Function to delete selected incidents
+  const deleteSelected = async () => {
+    if (selectedIncidents.length === 0) {
+      toast.warn("No incidents selected to delete")
+      return
+    }
+
+    const confirmation = window.confirm(
+      `Are you sure you want to delete ${selectedIncidents.length} incidents? This action cannot be undone.`
+    )
+    
+    if (!confirmation) return
+
+    setBulkActionLoading(true)
+    try {
+      // Send the DELETE request to the server with the selected incident IDs
+      const response = await axios.delete(`${API_URL}/api/incidents`, {
+        data: { incidentIds: selectedIncidents },
+      })
+
+      // If successful, filter out the deleted incidents from the current list
+      setIncidents((prevIncidents) =>
+        prevIncidents.filter((incident) => !selectedIncidents.includes(incident._id))
+      )
+      setSelectedIncidents([]) // Clear selected incidents after delete
+      toast.success(`${response.data.deletedCount} incidents deleted successfully`)
+    } catch (error) {
+      toast.error("Failed to delete selected incidents")
+      console.error(error)
+    } finally {
+      setBulkActionLoading(false)
+    }
+  }
+
   return (
     <div className="container-fluid">
       <h1 className="h3">Manage Incidents</h1>
@@ -138,8 +172,12 @@ const ManageIncidents = () => {
         <div className="card-header d-flex justify-content-between">
           <h5>Incidents</h5>
           {selectedIncidents.length > 0 && (
-            <button className="btn btn-danger btn-sm" onClick={() => console.log("Bulk delete")}>
-              Delete Selected
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={deleteSelected}
+              disabled={bulkActionLoading}
+            >
+              {bulkActionLoading ? "Deleting..." : "Delete Selected"}
             </button>
           )}
         </div>
