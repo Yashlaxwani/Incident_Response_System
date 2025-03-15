@@ -1,34 +1,27 @@
-import React from 'react';
-
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
-  
+  const currentYear = new Date().getFullYear()
+
   return (
-    <footer className="bg-dark text-white py-4 mt-auto">
-      <div className="container">
-        <div className="row">
-          <div className="col-md-6">
-            <p className="mb-0">
-              &copy; {currentYear} Incident Reporting System. All Rights Reserved.
-            </p>
-          </div>
-          <div className="col-md-6 text-md-end">
-            <p className="mb-0">
-              Designed by{' '}
-              <a 
-                href="https://www.linkedin.com/in/yashlaxwani/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-white text-decoration-underline"
-              >
-                Yash Laxwani
-              </a>
-            </p>
+    <footer className="bg-light py-3 mt-auto border-top">
+      <div className="container-fluid">
+        <div className="d-flex flex-wrap justify-content-between align-items-center">
+          <p className="mb-0 text-muted">&copy; {currentYear} Incident Reporting System. All rights reserved.</p>
+          <div>
+            <span className="text-muted">Designed by </span>
+            <a
+              href="https://www.linkedin.com/in/yash-laxwani/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-decoration-none"
+            >
+              Yash Laxwani
+            </a>
           </div>
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer
+
