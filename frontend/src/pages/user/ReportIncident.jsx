@@ -24,8 +24,7 @@ const ReportIncident = () => {
     })
   }
 
-  // In frontend/src/pages/user/ReportIncident.jsx
-// Update the handleFileChange function
+  
 
 const handleFileChange = async (e) => {
   const files = Array.from(e.target.files);
@@ -73,9 +72,11 @@ const handleFileChange = async (e) => {
     });
 
     // Add file URLs to form data
+    const uploadedUrls = response.data.fileUrls.map(file => file.url);
+
     setFormData({
       ...formData,
-      evidence: [...formData.evidence, ...response.data.fileUrls],
+      evidence: [...formData.evidence, ...uploadedUrls],
     });
 
     toast.success("Files uploaded successfully");

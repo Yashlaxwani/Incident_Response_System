@@ -21,6 +21,7 @@ const {
 const router = express.Router();
 
 const { protect, authorize } = require('../middleware/auth');
+router.delete('/bulk-delete', protect, authorize("admin", "superadmin"), bulkDeleteIncidents);
 
 // Protect all routes
 router.use(protect);
@@ -51,6 +52,7 @@ router.use(authorize('admin', 'superadmin'));
 router.get('/', getIncidents);
 router.put('/bulk-update', bulkUpdateIncidents);
 router.get('/export', exportIncidents);
+router.delete('/bulk-delete', protect, authorize("admin", "superadmin"), bulkDeleteIncidents);
 
 // Super Admin routes
 router.use(authorize('superadmin'));

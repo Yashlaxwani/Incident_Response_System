@@ -88,7 +88,7 @@ const IncidentDetails = () => {
         comment: `Status changed to ${INCIDENT_STATUSES.find((s) => s.value === status)?.label || status}`,
       })
 
-      setIncident(response.data)
+      setIncident(response.data.data)
       toast.success("Status updated successfully")
 
       // Notify the user via socket
@@ -97,6 +97,8 @@ const IncidentDetails = () => {
           incidentId: id,
           status,
           updatedBy: currentUser._id,
+          reportedBy: incident.reportedBy?._id,
+          title: incident.title,
         })
       }
     } catch (error) {
@@ -144,7 +146,11 @@ const IncidentDetails = () => {
   }
 
   const openFile = (url) => {
-    window.open(url, "_blank")
+    // Extract the filename from the URL
+    const filename = url.split("/").pop()
+
+    // Open the file in a new tab using the correct API endpoint
+    window.open(`${API_URL}/api/upload/${filename}`, "_blank")
   }
 
   if (loading) {

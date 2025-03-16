@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useContext } from "react"
 import axios from "axios"
 import { API_URL } from "../config"
+import { initializeSocket, disconnectSocket } from "../services/socketService";
 
 const AuthContext = createContext()
 
@@ -10,6 +11,17 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [notifications, setNotifications] = useState([]);
+
+  const setupSocketListeners = (socket) => {
+    if (!socket) return;
+    
+    socket.on("notification", (notification) => {
+      setNotifications(prev => [notification, ...prev]);
+      // You could also use toast notifications here
+      // toast.info(notification.message);
+    });
+  };
 
   useEffect(() => {
     // Check if user is logged in on mount
@@ -21,6 +33,9 @@ export const AuthProvider = ({ children }) => {
           axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
           const response = await axios.get(`${API_URL}/api/auth/me`)
           setCurrentUser(response.data)
+
+          const socket = initializeSocket(token);
+          setupSocketListeners(socket);
         }
       } catch (err) {
         console.error("Authentication error:", err)
@@ -31,7 +46,10 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
-    checkLoggedIn()
+    checkLoggedIn();
+    return () => {
+      disconnectSocket();
+    };
   }, [])
 
   const login = async (email, password) => {
@@ -43,6 +61,10 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", token)
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
       setCurrentUser(user)
+
+      const socket = initializeSocket(token);
+      setupSocketListeners(socket);
+
       return user
     } catch (err) {
       setError(err.response?.data?.message || "Login failed")
@@ -65,6 +87,9 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token")
     delete axios.defaults.headers.common["Authorization"]
     setCurrentUser(null)
+    setNotifications([]);
+
+    disconnectSocket();
   }
 
   const forgotPassword = async (email) => {
@@ -116,3 +141,4 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+export default AuthContext;

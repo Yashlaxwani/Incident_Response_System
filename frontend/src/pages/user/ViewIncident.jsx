@@ -69,7 +69,11 @@ const ViewIncident = () => {
   }
 
   const openFile = (url) => {
-    window.open(url, "_blank")
+    // Extract the filename from the URL
+    const filename = url.split("/").pop()
+
+    // Open the file in a new tab using the correct API endpoint
+    window.open(`${API_URL}/api/upload/${filename}`, "_blank")
   }
 
   if (loading) {

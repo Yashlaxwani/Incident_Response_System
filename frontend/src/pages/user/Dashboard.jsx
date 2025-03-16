@@ -5,6 +5,7 @@ import { API_URL, INCIDENT_STATUSES, INCIDENT_CATEGORIES } from "../../config"
 import { useAuth } from "../../context/AuthContext"
 import { toast } from "react-toastify"
 import LoadingSpinner from "../../components/common/LoadingSpinner"
+import { getSocket } from "../../services/socketService";
 
 const Dashboard = () => {
   const [incidents, setIncidents] = useState([]);
@@ -26,9 +27,7 @@ const Dashboard = () => {
   
   const { currentUser } = useAuth();
 
-  useEffect(() => {
-    fetchIncidents();
-  }, []);
+
 
   const fetchIncidents = async () => {
     try {
@@ -50,6 +49,26 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchIncidents();
+    
+    // Set up socket listeners
+    const socket = getSocket();
+    if (socket) {
+      socket.on("incidentUpdate", (data) => {
+        // Refresh the incidents list when any update occurs
+        fetchIncidents();
+      });
+    }
+    
+    return () => {
+      const socket = getSocket();
+      if (socket) {
+        socket.off("incidentUpdate");
+      }
+    };
+  }, []);
 
   // Local filter and sort
   const filteredAndSortedIncidents = () => {

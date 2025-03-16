@@ -4,6 +4,7 @@ import axios from "axios"
 import { API_URL, CHART_COLORS } from "../../config"
 import { toast } from "react-toastify"
 import LoadingSpinner from "../../components/common/LoadingSpinner"
+import { getSocket } from "../../services/socketService"
 import { Bar, Pie, Line } from "react-chartjs-2"
 import {
   Chart as ChartJS,
@@ -40,20 +41,50 @@ const SuperAdminDashboard = () => {
   })
   const [loading, setLoading] = useState(true)
 
+  const fetchDashboardData = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/superadmin/dashboard`)
+      setStats(response.data)
+    } catch (error) {
+      toast.error("Failed to fetch dashboard data")
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/superadmin/dashboard`)
-        setStats(response.data)
-      } catch (error) {
-        toast.error("Failed to fetch dashboard data")
-        console.error(error)
-      } finally {
-        setLoading(false)
-      }
+    fetchDashboardData()
+
+    // Set up socket event listeners for real-time updates
+    const socket = getSocket()
+
+    console.log(socket)
+
+    if (socket) {
+      // Listen for incident updates
+      socket.on("incidentUpdate", (data) => {
+        console.log("Incident updated:", data)
+        fetchDashboardData()
+      })
+
+      // Listen for new incidents
+      socket.on("newIncident", (data) => {
+        console.log("New incident created:", data)
+        fetchDashboardData()
+
+        // Add toast notification
+        toast.info(`New incident reported: ${data.incident?.title || "Untitled"}`)
+      })
     }
 
-    fetchDashboardData()
+    return () => {
+      // Cleanup event listeners
+      if (socket) {
+        socket.off("incidentUpdate")
+        socket.off("newIncident")
+      }
+    }
   }, [])
 
   const pieChartData = {

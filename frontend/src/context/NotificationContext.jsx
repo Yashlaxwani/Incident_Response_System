@@ -2,6 +2,8 @@ import { createContext, useState, useEffect, useContext } from "react"
 import io from "socket.io-client"
 import { useAuth } from "./AuthContext"
 import { API_URL } from "../config"
+import { toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 const NotificationContext = createContext()
 
@@ -20,24 +22,24 @@ export const NotificationProvider = ({ children }) => {
         auth: {
           token: localStorage.getItem("token"),
         },
-        transports: ['websocket', 'polling'], // Try both WebSocket and polling
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
-    newSocket.on('connect', () => {
-      console.log('Socket connected:', newSocket.id);
-    });
+        transports: ["websocket", "polling"], // Try both WebSocket and polling
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+      })
+      newSocket.on("connect", () => {
+        console.log("Socket connected:", newSocket.id)
+      })
 
-    newSocket.on('connect_error', (err) => {
-      console.error('Socket connection error:', err.message);
-    });
+      newSocket.on("connect_error", (err) => {
+        console.error("Socket connection error:", err.message)
+      })
 
       setSocket(newSocket)
 
       // Clean up on unmount
       return () => {
-        console.log('Disconnecting socket');
+        console.log("Disconnecting socket")
         newSocket.disconnect()
       }
     }
@@ -55,10 +57,11 @@ export const NotificationProvider = ({ children }) => {
             },
           })
           const data = await response.json()
-          setNotifications(data)
-          setUnreadCount(data.filter((n) => !n.read).length)
+          setNotifications(data || []) // Ensure data is an array
+          setUnreadCount(data && Array.isArray(data) ? data.filter((n) => !n.read).length : 0)
         } catch (error) {
           console.error("Error fetching notifications:", error)
+          setNotifications([]) // Set to empty array on error
         }
       }
 
@@ -66,20 +69,53 @@ export const NotificationProvider = ({ children }) => {
 
       // Listen for new notifications
       socket.on("notification", (notification) => {
-        console.log("Received notification:", notification);
-        setNotifications((prev) => [notification, ...prev])
+        console.log("Received notification:", notification)
+
+        // Make sure we're adding to an array
+        setNotifications((prev) => {
+          // Check if prev is an array, if not, initialize as empty array
+          const prevArray = Array.isArray(prev) ? prev : []
+          return [notification, ...prevArray]
+        })
+
         setUnreadCount((prev) => prev + 1)
+
+        // Add toast notification
+        toast.info(notification.message)
       })
 
       // Listen for incident updates
       socket.on("incidentUpdate", (updatedIncident) => {
         // Handle real-time incident updates
-        // This will be used to update the UI when incidents are modified
+        console.log("Incident updated:", updatedIncident)
+
+        // Add toast notification for incident updates
+        if (updatedIncident.status) {
+          const statusText =
+            updatedIncident.status === "open"
+              ? "Open"
+              : updatedIncident.status === "in-progress"
+                ? "In Progress"
+                : "Resolved"
+          toast.info(`Incident status updated to: ${statusText}`)
+        }
+      })
+
+      // Listen for new incidents
+      socket.on("newIncident", (data) => {
+        console.log("New incident received:", data)
+        // Add toast notification for new incidents
+        if (data.incident && data.incident.title) {
+          toast.info(`New incident reported: ${data.incident.title}`)
+        } else {
+          toast.info("New incident reported")
+        }
       })
 
       return () => {
         socket.off("notification")
         socket.off("incidentUpdate")
+        socket.off("newIncident")
       }
     }
   }, [socket, currentUser])
@@ -93,7 +129,11 @@ export const NotificationProvider = ({ children }) => {
         },
       })
 
-      setNotifications((prev) => prev.map((n) => (n._id === notificationId ? { ...n, read: true } : n)))
+      setNotifications((prev) => {
+        // Check if prev is an array
+        if (!Array.isArray(prev)) return []
+        return prev.map((n) => (n._id === notificationId ? { ...n, read: true } : n))
+      })
 
       setUnreadCount((prev) => Math.max(0, prev - 1))
     } catch (error) {
@@ -110,7 +150,11 @@ export const NotificationProvider = ({ children }) => {
         },
       })
 
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
+      setNotifications((prev) => {
+        // Check if prev is an array
+        if (!Array.isArray(prev)) return []
+        return prev.map((n) => ({ ...n, read: true }))
+      })
 
       setUnreadCount(0)
     } catch (error) {

@@ -72,6 +72,7 @@ app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/superadmin', require('./routes/superadminRoutes'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 
 // Error handling middleware
