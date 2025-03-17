@@ -23,9 +23,9 @@ This is a **Secure Incident Reporting System** built using the **MERN stack** (M
 ---
 
 ## 🛠️ Technologies Used
-- **Frontend:** React.js, Axios, Redux, Socket.io-client, TailwindCSS
+- **Frontend:** React.js, Axios, Socket.io-client
 - **Backend:** Node.js, Express.js, MongoDB, JWT Authentication, Multer (for file uploads), Socket.io (real-time notifications)
-- **Database:** MongoDB with Mongoose ORM
+- **Database:** MongoDB
 - **Security:** JWT Authentication, Role-Based Access Control (RBAC)
 
 ---
@@ -66,7 +66,6 @@ npm start
 
 cd frontend
 npm start
-]
 
 The backend will run on **`http://localhost:5000`**, and the frontend will be available at **`http://localhost:3000`**.
 
