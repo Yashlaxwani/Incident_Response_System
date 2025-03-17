@@ -2,7 +2,7 @@ const AuditLog = require('../models/AuditLog');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorResponse = require('../utils/errorResponse');
 
-// @desc    Get audit logs
+
 // @route   GET /api/audit-logs
 // @access  Private/SuperAdmin
 exports.getAuditLogs = asyncHandler(async (req, res, next) => {
@@ -69,7 +69,7 @@ exports.getAuditLogs = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Get audit logs for a specific resource
+
 // @route   GET /api/audit-logs/resource/:resourceType/:resourceId
 // @access  Private/Admin
 exports.getResourceAuditLogs = asyncHandler(async (req, res, next) => {

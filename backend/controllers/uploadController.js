@@ -3,7 +3,7 @@ const ErrorResponse = require("../utils/errorResponse")
 const path = require("path")
 const fs = require("fs")
 
-// @desc    Upload files
+//       Upload files
 // @route   POST /api/upload
 // @access  Private
 exports.uploadFiles = asyncHandler(async (req, res, next) => {
@@ -25,7 +25,7 @@ exports.uploadFiles = asyncHandler(async (req, res, next) => {
   })
 })
 
-// @desc    Get file by filename
+//       Get file by filename
 // @route   GET /api/upload/:filename
 // @access  Private
 exports.getFile = asyncHandler(async (req, res, next) => {

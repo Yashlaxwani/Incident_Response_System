@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { API_URL, INCIDENT_CATEGORIES, INCIDENT_PRIORITIES, FILE_UPLOAD_CONFIG } from "../../config"
 import { toast } from "react-toastify"
+import { getSocket } from "../../utils/socket"
 
 const ReportIncident = () => {
   const [formData, setFormData] = useState({
@@ -24,69 +25,70 @@ const ReportIncident = () => {
     })
   }
 
-  
+  // In frontend/src/pages/user/ReportIncident.jsx
+  // Update the handleFileChange function
 
-const handleFileChange = async (e) => {
-  const files = Array.from(e.target.files);
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files)
 
-  // Validate file size and type
-  const invalidFiles = files.filter((file) => {
-    const isValidSize = file.size <= FILE_UPLOAD_CONFIG.maxFileSize;
-    const fileExt = `.${file.name.split(".").pop().toLowerCase()}`;
-    const isValidType = FILE_UPLOAD_CONFIG.acceptedFormats.includes(fileExt);
+    // Validate file size and type
+    const invalidFiles = files.filter((file) => {
+      const isValidSize = file.size <= FILE_UPLOAD_CONFIG.maxFileSize
+      const fileExt = `.${file.name.split(".").pop().toLowerCase()}`
+      const isValidType = FILE_UPLOAD_CONFIG.acceptedFormats.includes(fileExt)
 
-    return !isValidSize || !isValidType;
-  });
+      return !isValidSize || !isValidType
+    })
 
-  if (invalidFiles.length > 0) {
-    toast.error(`Some files were not added. Please ensure files are under 5MB and in the correct format.`);
-    return;
+    if (invalidFiles.length > 0) {
+      toast.error(`Some files were not added. Please ensure files are under 5MB and in the correct format.`)
+      return
+    }
+
+    setUploadingFiles(true)
+
+    try {
+      // Create preview for each file
+      const previews = files.map((file) => {
+        return {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
+        }
+      })
+
+      setFilePreview([...filePreview, ...previews])
+
+      // Prepare files for upload
+      const formDataFiles = new FormData()
+      files.forEach((file) => {
+        formDataFiles.append("files", file)
+      })
+
+      // Upload files to server
+      const response = await axios.post(`${API_URL}/api/upload`, formDataFiles, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+
+      // Add file URLs to form data
+      const uploadedUrls = response.data.fileUrls.map((file) => file.url)
+
+      setFormData({
+        ...formData,
+        evidence: [...formData.evidence, ...uploadedUrls],
+      })
+
+      toast.success("Files uploaded successfully")
+    } catch (error) {
+      console.error("File upload error:", error)
+      toast.error(`Failed to upload files: ${error.response?.data?.message || error.message}`)
+    } finally {
+      setUploadingFiles(false)
+    }
   }
-
-  setUploadingFiles(true);
-
-  try {
-    // Create preview for each file
-    const previews = files.map((file) => {
-      return {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
-      };
-    });
-
-    setFilePreview([...filePreview, ...previews]);
-
-    // Prepare files for upload
-    const formDataFiles = new FormData();
-    files.forEach((file) => {
-      formDataFiles.append("files", file);
-    });
-
-    // Upload files to server
-    const response = await axios.post(`${API_URL}/api/upload`, formDataFiles, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    // Add file URLs to form data
-    const uploadedUrls = response.data.fileUrls.map(file => file.url);
-
-    setFormData({
-      ...formData,
-      evidence: [...formData.evidence, ...uploadedUrls],
-    });
-
-    toast.success("Files uploaded successfully");
-  } catch (error) {
-    console.error("File upload error:", error);
-    toast.error(`Failed to upload files: ${error.response?.data?.message || error.message}`);
-  } finally {
-    setUploadingFiles(false);
-  }
-};
 
   const removeFile = (index) => {
     const updatedPreviews = [...filePreview]
@@ -107,8 +109,35 @@ const handleFileChange = async (e) => {
     setLoading(true)
 
     try {
-      await axios.post(`${API_URL}/api/incidents`, formData)
+      const response = await axios.post(`${API_URL}/api/incidents`, formData)
       toast.success("Incident reported successfully")
+
+      // Get socket instance
+      const socket = getSocket()
+
+      // Check if socket exists and is connected
+      if (socket && socket.connected) {
+        console.log("Emitting newIncident event:", response.data.data)
+
+        // Emit socket event for new incident
+        socket.emit("newIncident", {
+          incident: {
+            _id: response.data.data._id,
+            title: response.data.data.title,
+            category: response.data.data.category,
+            priority: response.data.data.priority,
+            status: response.data.data.status,
+            createdAt: response.data.data.createdAt,
+            reportedBy: {
+              _id: response.data.data.reportedBy,
+              name: response.data.data.reportedBy?.name || "User",
+            },
+          },
+        })
+      } else {
+        console.warn("Socket not connected, can't emit newIncident event")
+      }
+
       navigate("/user/dashboard")
     } catch (error) {
       toast.error("Failed to report incident")

@@ -3,7 +3,7 @@ const asyncHandler = require('../middleware/asyncHandler');
 const ErrorResponse = require('../utils/errorResponse');
 const { createAuditLog } = require('../middleware/logger');
 
-// @desc    Get all users
+//       Get all users
 // @route   GET /api/users
 // @access  Private/SuperAdmin
 exports.getUsers = asyncHandler(async (req, res, next) => {
@@ -72,7 +72,7 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Get single user
+//       Get single user
 // @route   GET /api/users/:id
 // @access  Private/SuperAdmin
 exports.getUser = asyncHandler(async (req, res, next) => {
@@ -88,7 +88,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Create user
+//       Create user
 // @route   POST /api/users
 // @access  Private/SuperAdmin
 exports.createUser = asyncHandler(async (req, res, next) => {
@@ -127,7 +127,7 @@ exports.createUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Update user
+//       Update user
 // @route   PUT /api/users/:id
 // @access  Private/SuperAdmin
 exports.updateUser = asyncHandler(async (req, res, next) => {
@@ -168,7 +168,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Delete user
+//       Delete user
 // @route   DELETE /api/users/:id
 // @access  Private/SuperAdmin
 exports.deleteUser = asyncHandler(async (req, res, next) => {
@@ -196,7 +196,7 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Update user status (activate/deactivate)
+//       Update user status (activate/deactivate)
 // @route   PUT /api/users/:id/status
 // @access  Private/SuperAdmin
 exports.updateUserStatus = asyncHandler(async (req, res, next) => {
@@ -226,7 +226,7 @@ exports.updateUserStatus = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Get user profile
+//       Get user profile
 // @route   GET /api/users/profile
 // @access  Private
 exports.getUserProfile = asyncHandler(async (req, res, next) => {
@@ -238,7 +238,7 @@ exports.getUserProfile = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Update user profile
+//       Update user profile
 // @route   PUT /api/users/profile
 // @access  Private
 exports.updateUserProfile = asyncHandler(async (req, res, next) => {
@@ -270,7 +270,7 @@ exports.updateUserProfile = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Change user password
+//       Change user password
 // @route   PUT /api/users/change-password
 // @access  Private
 exports.changePassword = asyncHandler(async (req, res, next) => {
@@ -301,7 +301,7 @@ exports.changePassword = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Get user activity
+//       Get user activity
 // @route   GET /api/users/activity
 // @access  Private
 exports.getUserActivity = asyncHandler(async (req, res, next) => {
@@ -321,7 +321,7 @@ exports.getUserActivity = asyncHandler(async (req, res, next) => {
   res.status(200).json(activity);
 });
 
-// @desc    Get admin users (for incident assignment)
+//       Get admin users (for incident assignment)
 // @route   GET /api/admin/users/admins
 // @access  Private/Admin
 exports.getAdminUsers = asyncHandler(async (req, res, next) => {

@@ -9,7 +9,7 @@ const PDFDocument = require("pdfkit")
 const { createObjectCsvWriter } = require("csv-writer")
 const User = require("../models/User")
 
-// @desc    Get all incidents
+//       Get all incidents
 // @route   GET /api/incidents
 // @access  Private/Admin
 exports.getIncidents = asyncHandler(async (req, res, next) => {
@@ -91,7 +91,7 @@ exports.getIncidents = asyncHandler(async (req, res, next) => {
   })
 })
 
-// @desc    Get user's incidents
+//       Get user's incidents
 // @route   GET /api/incidents/user
 // @access  Private
 exports.getUserIncidents = asyncHandler(async (req, res, next) => {
@@ -105,7 +105,7 @@ exports.getUserIncidents = asyncHandler(async (req, res, next) => {
   res.status(200).json(incidents)
 })
 
-// @desc    Get single incident
+//       Get single incident
 // @route   GET /api/incidents/:id
 // @access  Private
 exports.getIncident = asyncHandler(async (req, res, next) => {
@@ -134,7 +134,7 @@ exports.getIncident = asyncHandler(async (req, res, next) => {
   res.status(200).json(incident)
 })
 
-// @desc    Create new incident
+//       Create new incident
 // @route   POST /api/incidents
 // @access  Private
 exports.createIncident = asyncHandler(async (req, res, next) => {
@@ -159,6 +159,10 @@ exports.createIncident = asyncHandler(async (req, res, next) => {
   // Notify admins via socket.io
   if (req.app.get("io")) {
     const io = req.app.get("io")
+
+    console.log("Emitting newIncident event to all connected clients")
+
+    // Emit to all connected clients
     io.emit("newIncident", {
       incident: {
         _id: incident._id,
@@ -186,6 +190,8 @@ exports.createIncident = asyncHandler(async (req, res, next) => {
         incidentId: incident._id,
       })
 
+      console.log(`Sending notification to admin: ${admin._id}`)
+
       io.to(admin._id.toString()).emit("notification", {
         type: "incident_update",
         incidentId: incident._id,
@@ -201,7 +207,7 @@ exports.createIncident = asyncHandler(async (req, res, next) => {
   })
 })
 
-// @desc    Update incident
+//       Update incident
 // @route   PUT /api/incidents/:id
 // @access  Private/Admin
 exports.updateIncident = asyncHandler(async (req, res, next) => {
@@ -249,7 +255,7 @@ exports.updateIncident = asyncHandler(async (req, res, next) => {
   })
 })
 
-// @desc    Delete incident
+//       Delete incident
 // @route   DELETE /api/incidents/:id
 // @access  Private/Admin
 exports.deleteIncident = asyncHandler(async (req, res, next) => {
@@ -277,7 +283,7 @@ exports.deleteIncident = asyncHandler(async (req, res, next) => {
   })
 })
 
-// @desc    Update incident status
+//       Update incident status
 // @route   PUT /api/incidents/:id/status
 // @access  Private/Admin
 exports.updateIncidentStatus = asyncHandler(async (req, res, next) => {
@@ -355,7 +361,7 @@ exports.updateIncidentStatus = asyncHandler(async (req, res, next) => {
   })
 })
 
-// @desc    Assign incident to user
+//       Assign incident to user
 // @route   PUT /api/incidents/:id/assign
 // @access  Private/Admin
 exports.assignIncident = asyncHandler(async (req, res, next) => {
@@ -430,7 +436,7 @@ exports.assignIncident = asyncHandler(async (req, res, next) => {
   })
 })
 
-// @desc    Bulk update incidents
+//       Bulk update incidents
 // @route   PUT /api/incidents/bulk-update
 // @access  Private/Admin
 exports.bulkUpdateIncidents = asyncHandler(async (req, res, next) => {
@@ -510,7 +516,7 @@ exports.bulkUpdateIncidents = asyncHandler(async (req, res, next) => {
   })
 })
 
-// @desc    Bulk delete incidents
+//       Bulk delete incidents
 // @route   DELETE /api/incidents/bulk-delete
 // @access  Private/SuperAdmin
 exports.bulkDeleteIncidents = asyncHandler(async (req, res, next) => {
@@ -546,7 +552,7 @@ exports.bulkDeleteIncidents = asyncHandler(async (req, res, next) => {
   })
 })
 
-// @desc    Export incidents
+//       Export incidents
 // @route   GET /api/incidents/export
 // @access  Private/Admin
 exports.exportIncidents = asyncHandler(async (req, res, next) => {

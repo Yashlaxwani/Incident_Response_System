@@ -7,7 +7,7 @@ const { generateToken, generateRefreshToken } = require("../utils/generateToken"
 const { createAuditLog } = require("../middleware/logger")
 const jwt = require("jsonwebtoken")
 
-// @desc    Register user
+//       Register user
 // @route   POST /api/auth/register
 // @access  Public
 exports.register = asyncHandler(async (req, res, next) => {
@@ -34,7 +34,7 @@ exports.register = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 201, res)
 })
 
-// @desc    Login user
+//       Login user
 // @route   POST /api/auth/login
 // @access  Public
 exports.login = asyncHandler(async (req, res, next) => {
@@ -82,7 +82,7 @@ exports.login = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res)
 })
 
-// @desc    Logout user / clear cookie
+// Logout user / clear cookie
 // @route   POST /api/auth/logout
 // @access  Private
 exports.logout = asyncHandler(async (req, res, next) => {
@@ -98,7 +98,7 @@ exports.logout = asyncHandler(async (req, res, next) => {
   })
 })
 
-// @desc    Get current logged in user
+//       Get current logged in user
 // @route   GET /api/auth/me
 // @access  Private
 exports.getMe = asyncHandler(async (req, res, next) => {
@@ -107,7 +107,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
   res.status(200).json(user)
 })
 
-// @desc    Refresh token
+//       Refresh token
 // @route   POST /api/auth/refresh-token
 // @access  Public
 exports.refreshToken = asyncHandler(async (req, res, next) => {
@@ -140,7 +140,7 @@ exports.refreshToken = asyncHandler(async (req, res, next) => {
   }
 })
 
-// @desc    Forgot password
+//       Forgot password
 // @route   POST /api/auth/forgot-password
 // @access  Public
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
@@ -188,7 +188,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   }
 })
 
-// @desc    Reset password
+// Reset password
 // @route   POST /api/auth/reset-password
 // @access  Public
 exports.resetPassword = asyncHandler(async (req, res, next) => {
@@ -216,7 +216,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res)
 })
 
-// @desc    Update user details
+// Update user details
 // @route   PUT /api/auth/update-details
 // @access  Private
 exports.updateDetails = asyncHandler(async (req, res, next) => {
@@ -239,7 +239,7 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
   })
 })
 
-// @desc    Update password
+// Update password
 // @route   PUT /api/auth/update-password
 // @access  Private
 exports.updatePassword = asyncHandler(async (req, res, next) => {
@@ -259,13 +259,13 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res)
 })
 
-// Helper function to get token from model, create cookie and send response
+
 const sendTokenResponse = (user, statusCode, res) => {
   // Create token
   const token = generateToken(user._id)
   const refreshToken = generateRefreshToken(user._id)
 
-  // Save refresh token to database
+  
   User.findByIdAndUpdate(user._id, { refreshToken })
 
   res.status(statusCode).json({

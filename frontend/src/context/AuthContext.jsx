@@ -18,8 +18,7 @@ export const AuthProvider = ({ children }) => {
     
     socket.on("notification", (notification) => {
       setNotifications(prev => [notification, ...prev]);
-      // You could also use toast notifications here
-      // toast.info(notification.message);
+      
     });
   };
 

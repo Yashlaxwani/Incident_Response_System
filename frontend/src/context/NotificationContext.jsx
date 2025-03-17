@@ -22,7 +22,7 @@ export const NotificationProvider = ({ children }) => {
         auth: {
           token: localStorage.getItem("token"),
         },
-        transports: ["websocket", "polling"], // Try both WebSocket and polling
+        transports: ["websocket", "polling"],
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
@@ -48,7 +48,7 @@ export const NotificationProvider = ({ children }) => {
   // Set up socket event listeners
   useEffect(() => {
     if (socket && currentUser) {
-      // Fetch existing notifications
+      
       const fetchNotifications = async () => {
         try {
           const response = await fetch(`${API_URL}/api/notifications`, {
@@ -71,7 +71,7 @@ export const NotificationProvider = ({ children }) => {
       socket.on("notification", (notification) => {
         console.log("Received notification:", notification)
 
-        // Make sure we're adding to an array
+        
         setNotifications((prev) => {
           // Check if prev is an array, if not, initialize as empty array
           const prevArray = Array.isArray(prev) ? prev : []
@@ -80,7 +80,7 @@ export const NotificationProvider = ({ children }) => {
 
         setUnreadCount((prev) => prev + 1)
 
-        // Add toast notification
+       
         toast.info(notification.message)
       })
 
@@ -89,7 +89,7 @@ export const NotificationProvider = ({ children }) => {
         // Handle real-time incident updates
         console.log("Incident updated:", updatedIncident)
 
-        // Add toast notification for incident updates
+       
         if (updatedIncident.status) {
           const statusText =
             updatedIncident.status === "open"
@@ -104,6 +104,7 @@ export const NotificationProvider = ({ children }) => {
       // Listen for new incidents
       socket.on("newIncident", (data) => {
         console.log("New incident received:", data)
+
         // Add toast notification for new incidents
         if (data.incident && data.incident.title) {
           toast.info(`New incident reported: ${data.incident.title}`)
@@ -130,7 +131,7 @@ export const NotificationProvider = ({ children }) => {
       })
 
       setNotifications((prev) => {
-        // Check if prev is an array
+       
         if (!Array.isArray(prev)) return []
         return prev.map((n) => (n._id === notificationId ? { ...n, read: true } : n))
       })

@@ -3,7 +3,7 @@ const User = require('../models/User');
 const asyncHandler = require('../middleware/asyncHandler');
 const mongoose = require('mongoose');
 
-// @desc    Get admin dashboard data
+//       Get admin dashboard data
 // @route   GET /api/admin/dashboard
 // @access  Private/Admin
 exports.getAdminDashboard = asyncHandler(async (req, res, next) => {
@@ -72,7 +72,7 @@ exports.getAdminDashboard = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Get super admin dashboard data
+//       Get super admin dashboard data
 // @route   GET /api/superadmin/dashboard
 // @access  Private/SuperAdmin
 exports.getSuperAdminDashboard = asyncHandler(async (req, res, next) => {

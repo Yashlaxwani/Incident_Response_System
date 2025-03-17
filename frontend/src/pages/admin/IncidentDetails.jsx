@@ -146,11 +146,34 @@ const IncidentDetails = () => {
   }
 
   const openFile = (url) => {
-    // Extract the filename from the URL
-    const filename = url.split("/").pop()
+    try {
+      // Check if URL is defined
+      if (!url) {
+        console.error("File URL is undefined")
+        toast.error("File URL is missing")
+        return
+      }
 
-    // Open the file in a new tab using the correct API endpoint
-    window.open(`${API_URL}/api/upload/${filename}`, "_blank")
+      // Check if URL is a string
+      if (typeof url !== "string") {
+        console.error("File URL is not a string:", url)
+        toast.error("Invalid file URL format")
+        return
+      }
+
+      // Extract the filename from the URL
+      const filename = url.split("/").pop()
+
+      // Create a direct URL to the file
+      const fileUrl = `${API_URL}/api/upload/${filename}`
+      console.log("Opening file URL:", fileUrl)
+
+      // Open in a new tab
+      window.open(fileUrl, "_blank")
+    } catch (error) {
+      console.error("Error opening file:", error)
+      toast.error("Failed to open file")
+    }
   }
 
   if (loading) {

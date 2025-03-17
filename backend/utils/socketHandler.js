@@ -9,6 +9,7 @@ exports.setupSocketIO = (io) => {
       const token = socket.handshake.auth.token
 
       if (!token) {
+        console.log("Socket connection rejected: No token provided")
         return next(new Error("Authentication error: Token not provided"))
       }
 
@@ -19,16 +20,18 @@ exports.setupSocketIO = (io) => {
       const user = await User.findById(decoded.id)
 
       if (!user) {
+        console.log("Socket connection rejected: User not found")
         return next(new Error("Authentication error: User not found"))
       }
 
       if (!user.isActive) {
+        console.log("Socket connection rejected: User account is deactivated")
         return next(new Error("Authentication error: User account is deactivated"))
       }
 
       // Attach user to socket
       socket.user = user
-      console.log(`Socket authenticated for user: ${user.name} (${user._id})`)
+      console.log(`Socket authenticated for user: ${user.name} (${user._id}) with role: ${user.role}`)
       next()
     } catch (error) {
       console.error("Socket authentication error:", error)
@@ -38,14 +41,16 @@ exports.setupSocketIO = (io) => {
 
   // Connection event
   io.on("connection", (socket) => {
-    console.log(`User connected: ${socket.user._id}`)
+    console.log(`User connected: ${socket.user._id} (${socket.user.name}) with role: ${socket.user.role}`)
 
     // Join user to their own room for private notifications
     socket.join(socket.user._id.toString())
+    console.log(`User ${socket.user._id} joined their private room`)
 
     // Join room based on user role
     if (socket.user.role === "admin" || socket.user.role === "superadmin") {
       socket.join("admins")
+      console.log(`User ${socket.user._id} joined admins room`)
     }
 
     // Handle status updates
@@ -68,13 +73,17 @@ exports.setupSocketIO = (io) => {
 
     // Handle new incidents
     socket.on("newIncident", (data) => {
-      console.log("New incident received:", data)
+      console.log("New incident received from client:", data)
+
       // Broadcast to admin users
       io.to("admins").emit("newIncident", data)
+      console.log("Broadcasted newIncident to admins room")
     })
 
     // Handle new comments
     socket.on("newComment", (data) => {
+      console.log("New comment received:", data)
+
       // Broadcast to specific incident room
       io.to(`incident-${data.incidentId}`).emit("newComment", data)
 
@@ -91,6 +100,8 @@ exports.setupSocketIO = (io) => {
 
     // Handle incident assignment
     socket.on("incidentAssigned", (data) => {
+      console.log("Incident assignment received:", data)
+
       // Send notification to assigned user
       if (data.assignedTo) {
         io.to(data.assignedTo.toString()).emit("notification", {
@@ -104,7 +115,7 @@ exports.setupSocketIO = (io) => {
 
     // Disconnect event
     socket.on("disconnect", () => {
-      console.log(`User disconnected: ${socket.user._id}`)
+      console.log(`User disconnected: ${socket.user._id} (${socket.user.name})`)
     })
   })
 }

@@ -5,7 +5,7 @@ const asyncHandler = require('../middleware/asyncHandler');
 const ErrorResponse = require('../utils/errorResponse');
 const { createAuditLog } = require('../middleware/logger');
 
-// @desc    Get comments for an incident
+// Get comments for an incident
 // @route   GET /api/incidents/:incidentId/comments
 // @access  Private
 exports.getComments = asyncHandler(async (req, res, next) => {
@@ -15,7 +15,7 @@ exports.getComments = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(`Incident not found with id of ${req.params.incidentId}`, 404));
   }
 
-  // Check if user has permission to view this incident's comments
+  
   if (
     req.user.role !== 'admin' && 
     req.user.role !== 'superadmin' && 
@@ -31,8 +31,8 @@ exports.getComments = asyncHandler(async (req, res, next) => {
   res.status(200).json(comments);
 });
 
-// @desc    Add comment to an incident
-// @route   POST /api/incidents/:incidentId/comments
+// Add comment to an incident
+//@route   POST /api/incidents/:incidentId/comments
 // @access  Private
 exports.addComment = asyncHandler(async (req, res, next) => {
   const incident = await Incident.findById(req.params.incidentId)
@@ -51,7 +51,7 @@ exports.addComment = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse(`Not authorized to comment on this incident`, 403));
   }
 
-  // Create comment
+  
   const comment = await Comment.create({
     content: req.body.content,
     incident: req.params.incidentId,
@@ -71,7 +71,7 @@ exports.addComment = asyncHandler(async (req, res, next) => {
     req
   );
 
-  // Create notification for the incident owner if not the commenter
+  
   if (
     incident.reportedBy && 
     incident.reportedBy._id.toString() !== req.user.id
@@ -133,7 +133,7 @@ exports.addComment = asyncHandler(async (req, res, next) => {
   res.status(201).json(comment);
 });
 
-// @desc    Delete comment
+//       Delete comment
 // @route   DELETE /api/comments/:id
 // @access  Private
 exports.deleteComment = asyncHandler(async (req, res, next) => {

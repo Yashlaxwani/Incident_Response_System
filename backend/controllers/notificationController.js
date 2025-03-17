@@ -2,7 +2,7 @@ const Notification = require('../models/Notification');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorResponse = require('../utils/errorResponse');
 
-// @desc    Get user notifications
+//       Get user notifications
 // @route   GET /api/notifications
 // @access  Private
 exports.getNotifications = asyncHandler(async (req, res, next) => {
@@ -13,7 +13,7 @@ exports.getNotifications = asyncHandler(async (req, res, next) => {
   res.status(200).json(notifications);
 });
 
-// @desc    Mark notification as read
+//       Mark notification as read
 // @route   PUT /api/notifications/:id/read
 // @access  Private
 exports.markAsRead = asyncHandler(async (req, res, next) => {
@@ -37,7 +37,7 @@ exports.markAsRead = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Mark all notifications as read
+//       Mark all notifications as read
 // @route   PUT /api/notifications/read-all
 // @access  Private
 exports.markAllAsRead = asyncHandler(async (req, res, next) => {
@@ -52,7 +52,7 @@ exports.markAllAsRead = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Delete notification
+//       Delete notification
 // @route   DELETE /api/notifications/:id
 // @access  Private
 exports.deleteNotification = asyncHandler(async (req, res, next) => {
@@ -75,7 +75,7 @@ exports.deleteNotification = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Delete all read notifications
+//       Delete all read notifications
 // @route   DELETE /api/notifications/read
 // @access  Private
 exports.deleteReadNotifications = asyncHandler(async (req, res, next) => {
