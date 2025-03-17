@@ -99,9 +99,7 @@ The backend will run on **`http://localhost:5000`**, and the frontend will be av
 - Designed a **dashboard for incident statistics**.
 
 ### **6️⃣ Deployment**
-- Deployed the **frontend on Vercel/Netlify**.
-- Deployed the **backend on Render/Heroku**.
-- Used **MongoDB Atlas** for cloud database storage.
+- Deployment left 
 
 ---
 
