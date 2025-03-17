@@ -261,7 +261,7 @@ const ReportIncident = () => {
                 </label>
               </div>
               <small className="form-text text-muted">
-                Accepted formats: JPG, PNG, PDF, DOC, DOCX, TXT. Max size: 5MB per file.
+                Accepted formats: PDF,CSV. Max size: 5MB per file.
               </small>
 
               {filePreview.length > 0 && (
